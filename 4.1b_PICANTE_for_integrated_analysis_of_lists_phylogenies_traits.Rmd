@@ -285,3 +285,177 @@ http://media.nycgovparks.org/images/web/TreesCount/Index.html
 
 Interesting additional resource - trees for 2050
 https://www.chicagobotanic.org/blog/plant_science_conservation/trees_2050
+
+```{r}
+library(stringi)
+newyork<-stri_split_lines("Gleditsia triacanthos
+Pyrus calleryana
+Ginkgo biloba
+Quercus palustris
+Styphnolobium japonicum
+Platanus × acerifolia
+Zelkova serrata
+Tilia cordata
+Ulmus americana
+Tilia americana")
+
+newyork<-data.frame("ny",newyork,1)
+names(newyork)<-c("ListID", "SpeciesID", "Freq")
+
+sanfrancisco<-stri_split_lines("Lophostemon confertus
+Platanus x hispanica
+Metrosideros excelsa
+Tristaniopsis laurina
+Prunus serrulata
+Arbutus 'Marina'
+Prunus cerasifera
+Ficus nitida
+Magnolia grandiflora
+Pittosporum undulatum")
+
+sanfrancisco<-data.frame("sf",sanfrancisco,1)
+names(sanfrancisco)<-c("ListID", "SpeciesID", "Freq")
+
+toronto<-stri_split_lines("Acer platanoides
+Fraxinus pennsylvanica
+Gleditsia triacanthos
+Tilia cordata
+Acer saccharinum
+Fraxinus americana
+Acer saccharum
+Malus pumila
+Ulmus thomasii
+Acer rubrum")
+
+toronto<-data.frame("to",toronto,1)
+names(toronto)<-c("ListID", "SpeciesID", "Freq")
+
+providence<-stri_split_lines("Acer platanoides
+Acer rubrum
+Pyrus calleryana
+Platanus × acerifolia
+Tilia cordata
+Gleditsia triacanthos
+Quercus palustris
+Malus pumila
+Ginkgo biloba
+Liquidambar styraciflua")
+
+providence<-data.frame("pr",providence,1)
+names(providence)<-c("ListID", "SpeciesID", "Freq")
+
+chicago<-stri_split_lines("Liquidambar styraciflua
+Zelkova serrata
+Ginkgo  biloba
+Sassafras albidum
+Quercus imbricaria
+Ostrya virginiana
+Viburnum lentago
+Tilia americana
+Platanus x acerifolia
+Ulmus Patriot")
+
+chicago<-data.frame("ch",chicago,1)
+names(chicago)<-c("ListID", "SpeciesID", "Freq")
+
+glasgow<-stri_split_lines("Fraxinus excelsior
+Crataegus monogyna
+Acer pseudoplatanus
+Salix caprea
+Betula pendula
+Acer platanoides
+Alnus glutinosa
+Prunus avium
+Quercus robur
+Betula nigra")
+
+glasgow<-data.frame("gl",glasgow,1)
+names(glasgow)<-c("ListID", "SpeciesID", "Freq")
+
+vitoria<-stri_split_lines("Catalpa bignonioides 
+Aesculus hippocastanum
+Platanus orientalis 
+Fraxinus excelsior
+Acer negundo 
+Betula alba
+Tilia argentea
+Acer platanoides 
+Populus nigra 
+Thuja plicata")
+
+vitoria<-data.frame("vi",vitoria,1)
+names(vitoria)<-c("ListID", "SpeciesID", "Freq")
+
+cities<-c(sanfrancisco,
+newyork,
+toronto,
+chicago,
+glasgow,
+vitoria,
+providence)
+
+```
+
+```{r}
+library(vegan)
+library(labdsv)
+ab=rbind(newyork, sanfrancisco,chicago,vitoria,toronto,providence,glasgow)
+abundance<-matrify(ab)
+jaccard = vegdist(abundance, "jaccard", binary=T)
+jaccard
+
+```
+
+
+```{r}
+library("ape")
+library("brranching")
+
+newyorktaxa<-newyork$SpeciesID
+tree_phylomatic <- phylomatic(taxa = newyorktaxa, storedtree ="R20120829", get = 'POST')
+plot(tree_phylomatic, no.margin = TRUE)
+```
+
+```{r}
+sftaxa<-sanfrancisco$SpeciesID
+tree_phylomatic <- phylomatic(taxa = sftaxa, storedtree ="R20120829", get = 'POST')
+plot(tree_phylomatic, no.margin = TRUE)
+```
+
+
+```{r}
+vitaxa<-vitoria$SpeciesID
+tree_phylomatic <- phylomatic(taxa = vitaxa, storedtree ="R20120829", get = 'POST')
+plot(tree_phylomatic, no.margin = TRUE)
+```
+
+```{r}
+totaxa<-toronto$SpeciesID
+tree_phylomatic <- phylomatic(taxa = totaxa, storedtree ="R20120829", get = 'POST')
+plot(tree_phylomatic, no.margin = TRUE)
+```
+
+```{r}
+chtaxa<-chicago$SpeciesID
+tree_phylomatic <- phylomatic(taxa = chtaxa, storedtree ="R20120829", get = 'POST')
+plot(tree_phylomatic, no.margin = TRUE)
+```
+
+```{r}
+prtaxa<-providence$SpeciesID
+tree_phylomatic <- phylomatic(taxa = prtaxa, storedtree ="R20120829", get = 'POST')
+plot(tree_phylomatic, no.margin = TRUE)
+```
+
+```{r}
+gltaxa<-glasgow$SpeciesID
+tree_phylomatic <- phylomatic(taxa = gltaxa, storedtree ="R20120829", get = 'POST')
+plot(tree_phylomatic, no.margin = TRUE)
+```
+
+```{r}
+shannon<-diversity(abundance, index = "shannon")
+shannon
+```
+
+

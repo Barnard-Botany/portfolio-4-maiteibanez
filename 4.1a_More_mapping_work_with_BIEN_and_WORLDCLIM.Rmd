@@ -207,8 +207,7 @@ tax_name(q="Solanum pimpinellifolium", get="family", db="ncbi")
 #If you wanted to know all the genera in a family, or all species in a genus, 
 #then you're referring to taxa "downstream"
 downstream("Cupressaceae", downto="species", db="itis")
-```
-
+e
 ```{r}
 #if you just want exactly one taxonomic rank lower, then this is referred to as "children"
 #Here, because Catalogue of Life can and will be queried INTERACTIVELY, 
@@ -383,32 +382,124 @@ Let's build and combine your new skills in looking up species occurrence data wi
 
 Going back to our peninsula, here are a bunch of species that are endemic to that area.
 
-Spergularia melanocaulos
-Petrocoptis grandiflora
-Spergula viscosa
-Minuartia cerastiifolia
-Minuartia recurva
-Petrocoptis hispanica
-Petrocoptis pyrenaica
+anthoxanthum  nitens
+carya illinoinensis
+acer saccharum
+cucúrbita maxima
+myristica fragans
+catharanthus roses
+vanilla planifolia
+zea mays
+malus pumila 
+cicer arietinum 
+brassica oleracea 
 
 Choose any two, and do the following:
 
 WORK WITH TAXISE
 1. Look up - are they accepted names or are they synonyms?
+```{r}
+results211=gnr_resolve(names="anthoxanthum  nitens")
+head(results211$matched_name)
+results212=gnr_resolve(names="carya illinoinensis")
+head(results212$matched_name)
+
+```
+```{r}
+tsn=get_tsn("Anthoxanthum nitens", accepted=FALSE)
+tsn
+lapply(tsn, itis_acceptname)
+
+tsn=get_tsn("carya illinoinensis", accepted=FALSE)
+tsn
+lapply(tsn, itis_acceptname)
+```
+
+
+
 2. Look up the two plant taxa. Are they both angiosperms?
+```{r}
+classification(c("Anthoxanthum nitens", "carya illinoinensis"), db="itis")
+```
+
+
 3. Angiosperm or otherwise, what plant family do they belong to?
+ 
+`Anthoxanthum nitens` poaceae
+carya illinoinensis`  junglandeaceae 
+
+
+
 4. For at least one genus, look up all the species in that genus.
+```{r}
+downstream("Juglandaceae", downto="species", db="itis")
+```
+
 5. For one species, look up to see if there are subspecies or other infraspecific forms.
+```{r}
+downstream("Anthoxanthum nitens", downto="subspecies", db="itis")
+```
+
 
 WORK WITH RGBIF OR SPOCC
 6. For both, search and download species occurrence data; prepare as a data-frame
+```{r}
+nittens <- occ(q="Anthoxanthum nitens", from="gbif", limit=50)
+nittens.df <- occ2df(nittens)
+nittens.df
+nittens.clean.df <- nittens.df[complete.cases(nittens.df),]
+nittens.clean.df
+
+carya <- occ(q="carya illinoinensis", from="gbif", limit=50)
+carya.df <- occ2df(carya)
+carya.df
+carya.clean.df <- carya.df[complete.cases(carya.df),]
+carya.clean.df
+```
+
+
 7. Clean-up the data-frame:  remove occurrences with missing data and duplicates
 
 
 WORK WITH OCCURRENCE DATA, WORLDCLIM DATA AND MAPS
 8. Map occurrence data with a climate variable for one species on the peninsula
+```{r}
+all.worldclim <- raster::getData("worldclim", res = 10, var = "bio")
+peninsula.worldclim <- crop(all.worldclim, extent(-10, 4, 35, 45))
+plot(peninsula.worldclim[["bio1"]])
+carya<- BIEN_ranges_load_species("Carya illinoinensis")
+nittens<- BIEN_ranges_load_species("Anthoxanthum nitens")
+points(cbind(carya$longitude, carya$latitude), col="red", pch=20, cex=.8)
+points(cbind(nittens$longitude, nittens$latitude), col="blue", pch=20, cex=.8)
+
+```
+
+
+
 9. Also map that species with climate variables on a world map or European map. Are you convinced that the species is endemic to this peninsula?
+```{r}
+all.worldclim <- raster::getData("worldclim", res = 10, var = "bio")
+peninsula.worldclim <- crop(all.worldclim, extent(-10, 64, 35, 95))
+plot(peninsula.worldclim[["bio1"]])
+carya<- BIEN_ranges_load_species("Carya illinoinensis")
+nittens<- BIEN_ranges_load_species("Anthoxanthum nitens")
+points(cbind(carya$longitude, carya$latitude), col="red", pch=20, cex=.8)
+points(cbind(nittens$longitude, nittens$latitude), col="blue", pch=20, cex=.8)
+
+```
+
+
 10. Returning to your results for #4 above, find another species with a range outside of the  peninsula. Download occurrence data and map on a world map. 
+```{r}
+pinus<- BIEN_ranges_load_species("Pinus sylvestris")
+all.worldclim <- raster::getData("worldclim", res = 10, var = "bio")
+peninsula.worldclim <- crop(all.worldclim, extent(-10, 64, 35, 95))
+map('world', fill=T, col="grey", bg="light blue", xlim=c(-85,-35),ylim=c(-40,12))
+plot(peninsula.worldclim[["bio1"]])
+points(cbind(pinus$longitude, pinus$latitude), col="red", pch=20, cex=.8)
+
+```
+
 11. Then re-map on an appropriately cropped map.
 
 ONE LAST THING
