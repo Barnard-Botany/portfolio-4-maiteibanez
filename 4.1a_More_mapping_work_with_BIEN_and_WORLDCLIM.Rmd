@@ -126,7 +126,9 @@ plot(peninsula.worldclim[["bio1"]])
 
 Answer the questions about this peninsula example. Then do your own example from Latin America:
 1. Where in the world is the peninsula mapped above?
+This is the Iberian Peninsula in Europe
 2. Is altitude a climate variable? How do the peninsula maps plotted above support your answer?
+Based on the map, one can say that attitude is a climate variable. The higher the elevation of a place, the cooler its temperature tends to be. In the example, the orange and yellow parts of the map correspond to more mountainous parts of Spain, like the Pyrenees.
 3. Make a South America map with occurrence data for Jungia pauciflora & J. polita and:
           a. Crop the map to allow discerning more detail in the two ranges
           b. Also include altitude data or climate data, with occurrence points overlayed.
@@ -207,7 +209,7 @@ tax_name(q="Solanum pimpinellifolium", get="family", db="ncbi")
 #If you wanted to know all the genera in a family, or all species in a genus, 
 #then you're referring to taxa "downstream"
 downstream("Cupressaceae", downto="species", db="itis")
-e
+```
 ```{r}
 #if you just want exactly one taxonomic rank lower, then this is referred to as "children"
 #Here, because Catalogue of Life can and will be queried INTERACTIVELY, 
@@ -464,11 +466,12 @@ carya.clean.df
 WORK WITH OCCURRENCE DATA, WORLDCLIM DATA AND MAPS
 8. Map occurrence data with a climate variable for one species on the peninsula
 ```{r}
+library(BIEN)
 all.worldclim <- raster::getData("worldclim", res = 10, var = "bio")
 peninsula.worldclim <- crop(all.worldclim, extent(-10, 4, 35, 45))
 plot(peninsula.worldclim[["bio1"]])
-carya<- BIEN_ranges_load_species("Carya illinoinensis")
-nittens<- BIEN_ranges_load_species("Anthoxanthum nitens")
+carya<- BIEN_occurrence_species("Carya illinoinensis")
+nittens<- BIEN_occurrence_species("Anthoxanthum nitens")
 points(cbind(carya$longitude, carya$latitude), col="red", pch=20, cex=.8)
 points(cbind(nittens$longitude, nittens$latitude), col="blue", pch=20, cex=.8)
 
@@ -481,8 +484,6 @@ points(cbind(nittens$longitude, nittens$latitude), col="blue", pch=20, cex=.8)
 all.worldclim <- raster::getData("worldclim", res = 10, var = "bio")
 peninsula.worldclim <- crop(all.worldclim, extent(-10, 64, 35, 95))
 plot(peninsula.worldclim[["bio1"]])
-carya<- BIEN_ranges_load_species("Carya illinoinensis")
-nittens<- BIEN_ranges_load_species("Anthoxanthum nitens")
 points(cbind(carya$longitude, carya$latitude), col="red", pch=20, cex=.8)
 points(cbind(nittens$longitude, nittens$latitude), col="blue", pch=20, cex=.8)
 
@@ -491,9 +492,14 @@ points(cbind(nittens$longitude, nittens$latitude), col="blue", pch=20, cex=.8)
 
 10. Returning to your results for #4 above, find another species with a range outside of the  peninsula. Download occurrence data and map on a world map. 
 ```{r}
-pinus<- BIEN_ranges_load_species("Pinus sylvestris")
+library(BIEN)
+library(ape) # Package for working with phylogenies in R
+library(maps) # Useful for making quick maps of occurrences
+library(sp) # A package for spatial data
+library(raster)
+pinus<- BIEN_occurrence_species("Quercus ilex")
 all.worldclim <- raster::getData("worldclim", res = 10, var = "bio")
-peninsula.worldclim <- crop(all.worldclim, extent(-10, 64, 35, 95))
+peninsula.worldclim <- crop(all.worldclim, extent(-10, 4, 35, 45))
 map('world', fill=T, col="grey", bg="light blue", xlim=c(-85,-35),ylim=c(-40,12))
 plot(peninsula.worldclim[["bio1"]])
 points(cbind(pinus$longitude, pinus$latitude), col="red", pch=20, cex=.8)
